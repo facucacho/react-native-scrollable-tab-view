@@ -1,36 +1,18 @@
-const React = require('react');
-const ReactNative = require('react-native');
-const {
+import React, { Component } from 'react';
+import {
   StyleSheet,
   Text,
   View,
   Animated,
-} = ReactNative;
+} from 'react-native';
 const Button = require('./Button');
 
-const DefaultTabBar = React.createClass({
-  propTypes: {
-    goToPage: React.PropTypes.func,
-    activeTab: React.PropTypes.number,
-    tabs: React.PropTypes.array,
-    underlineColor: React.PropTypes.string,
-    underlineHeight: React.PropTypes.number,
-    backgroundColor: React.PropTypes.string,
-    activeTextColor: React.PropTypes.string,
-    inactiveTextColor: React.PropTypes.string,
-    textStyle: Text.propTypes.style,
-    tabStyle: View.propTypes.style,
-  },
-
-  getDefaultProps() {
-    return {
-      activeTextColor: 'navy',
-      inactiveTextColor: 'black',
-      underlineColor: 'navy',
-      backgroundColor: null,
-      underlineHeight: 4,
-    };
-  },
+class DefaultTabBar extends Component{
+  constructor(props) {
+    super(props);
+    
+    this.renderTabOption = this.renderTabOption.bind(this);
+  }
 
   renderTabOption(name, page) {
     const isTabActive = this.props.activeTab === page;
@@ -39,20 +21,19 @@ const DefaultTabBar = React.createClass({
     const fontWeight = isTabActive ? 'bold' : 'normal';
 
     return <Button
-      style={{flex: 1}}
       key={name}
       accessible={true}
       accessibilityLabel={name}
       accessibilityTraits='button'
       onPress={() => this.props.goToPage(page)}
     >
-      <View style={[styles.tab, this.props.tabStyle]}>
+      <View style={styles.tab}>
         <Text style={[{color: textColor, fontWeight, }, textStyle, ]}>
           {name}
         </Text>
       </View>
     </Button>;
-  },
+  }
 
   render() {
     const containerWidth = this.props.containerWidth;
@@ -75,8 +56,27 @@ const DefaultTabBar = React.createClass({
         <Animated.View style={[tabUnderlineStyle, { left, }, ]} />
       </View>
     );
-  },
-});
+  }
+}
+
+DefaultTabBar.propTypes = {
+  goToPage: React.PropTypes.func,
+  activeTab: React.PropTypes.number,
+  tabs: React.PropTypes.array,
+  underlineColor: React.PropTypes.string,
+  backgroundColor: React.PropTypes.string,
+  activeTextColor: React.PropTypes.string,
+  inactiveTextColor: React.PropTypes.string,
+  textStyle: View.propTypes.style,
+};
+
+DefaultTabBar.defaultProps = {
+    activeTextColor: 'navy',
+    inactiveTextColor: 'black',
+    underlineColor: 'navy',
+    backgroundColor: null,
+    underlineHeight: 4,
+};
 
 const styles = StyleSheet.create({
   tab: {

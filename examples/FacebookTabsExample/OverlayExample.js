@@ -1,4 +1,4 @@
-import React from 'react';
+import Reactm { Component } from 'react';
 import {
   StyleSheet,
   ScrollView,
@@ -10,7 +10,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 // Using tabBarPosition='overlayTop' or 'overlayBottom' lets the content show through a
 // semitransparent tab bar. Note that if you build a custom tab bar component, its outer container
 // must consume a 'style' prop (e.g. <View style={this.props.style}) to support this feature.
-export default React.createClass({
+export default class OverlayExample extends Component{
   render() {
     return <ScrollableTabView
       style={styles.container}
@@ -30,8 +30,8 @@ export default React.createClass({
         <Icon name='android-playstore' color='#A4C639' size={300} style={styles.icon} />
       </ScrollView>
     </ScrollableTabView>;
-  },
-});
+  }
+}
 
 const styles = StyleSheet.create({
   container: {

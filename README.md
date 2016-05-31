@@ -22,9 +22,9 @@ the animations behind this work, check out the Rebound section of the
 ## Basic usage
 
 ```javascript
-var ScrollableTabView = require('react-native-scrollable-tab-view');
+import ScrollableTabView from 'react-native-scrollable-tab-view';
 
-var App = React.createClass({
+class App extends Component{
   render() {
     return (
       <ScrollableTabView>
@@ -34,7 +34,7 @@ var App = React.createClass({
       </ScrollableTabView>
     );
   }
-});
+}
 ```
 
 ## Injecting a custom tab bar
@@ -43,10 +43,10 @@ Suppose we had a custom tab bar called `CustomTabBar`, we would inject
 it into our `ScrollableTabView` like this:
 
 ```javascript
-var ScrollableTabView = require('react-native-scrollable-tab-view');
-var CustomTabBar = require('./CustomTabBar');
+import ScrollableTabView from 'react-native-scrollable-tab-view';
+import CustomTabBar from './CustomTabBar';
 
-var App = React.createClass({
+class App extends Component{
   render() {
     return (
       <ScrollableTabView renderTabBar={() => <CustomTabBar someProp={'here'} />}>
@@ -56,7 +56,7 @@ var App = React.createClass({
       </ScrollableTabView>
     );
   }
-});
+}
 ```
 
 ## Examples

@@ -1,3 +1,5 @@
+import React, { Component } from 'react';
+
 import React, {
   StyleSheet,
   Text,
@@ -7,19 +9,19 @@ import React, {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 
-const FacebookTabBar = React.createClass({
-  tabIcons: [],
+class FacebookTabBar extends Component{
+  constructor(props) {
+    super(props);
 
-  propTypes: {
-    goToPage: React.PropTypes.func,
-    activeTab: React.PropTypes.number,
-    tabs: React.PropTypes.array,
-  },
+    this.tabIcons = [];
+    this.setAnimationValue = this.setAnimationValue.bind(this);
+    this.iconColor = this.iconColor.bind(this);
+  }
 
   componentDidMount() {
     this.setAnimationValue({ value: this.props.activeTab, });
     this._listener = this.props.scrollValue.addListener(this.setAnimationValue);
-  },
+  }
 
   setAnimationValue({ value, }) {
     this.tabIcons.forEach((icon, i) => {
@@ -30,7 +32,7 @@ const FacebookTabBar = React.createClass({
         },
       });
     });
-  },
+  }
 
   //color between rgb(59,89,152) and rgb(204,204,204)
   iconColor(progress) {
@@ -38,7 +40,7 @@ const FacebookTabBar = React.createClass({
     const green = 89 + (204 - 89) * progress;
     const blue = 152 + (204 - 152) * progress;
     return `rgb(${red}, ${green}, ${blue})`;
-  },
+  }
 
   render() {
     const tabWidth = this.props.containerWidth / this.props.tabs.length;
@@ -61,8 +63,14 @@ const FacebookTabBar = React.createClass({
       </View>
       <Animated.View style={[styles.tabUnderlineStyle, { width: tabWidth }, { left, }, ]} />
     </View>;
-  },
-});
+  }
+}
+
+FacebookTabBar.propTypes = {
+  goToPage: React.PropTypes.func,
+  activeTab: React.PropTypes.number,
+  tabs: React.PropTypes.array,
+};
 
 const styles = StyleSheet.create({
   tab: {

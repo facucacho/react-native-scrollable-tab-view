@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 import {
   StyleSheet,
   Text,
@@ -12,14 +12,20 @@ import ScrollableTabsExample from './ScrollableTabsExample';
 import OverlayExample from './OverlayExample';
 import FacebookExample from './FacebookExample';
 
-export default React.createClass({
+export default class FacebookTabsExample extends Component{
+  constructor(props) {
+    super(props);
+
+    this.renderScene = this.renderScene.bind(this);
+  }
+
   render() {
     return <Navigator
       style={{flex: 1, }}
       initialRoute={{}}
       renderScene={this.renderScene}
     />;
-  },
+  }
 
   renderScene(route, nav) {
     switch (route.id) {
@@ -62,8 +68,8 @@ export default React.createClass({
         </TouchableOpacity>
       </View>;
     }
-  },
-});
+  }
+}
 
 const styles = StyleSheet.create({
   container: {

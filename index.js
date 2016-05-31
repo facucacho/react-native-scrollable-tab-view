@@ -1,9 +1,5 @@
-const React = require('react');
-const {
-  PropTypes,
-} = React;
-const ReactNative = require('react-native');
-const {
+import React, { Component, PropTypes } from 'react';
+import {
   Dimensions,
   View,
   Animated,
@@ -12,58 +8,36 @@ const {
   StyleSheet,
   ViewPagerAndroid,
   InteractionManager,
-} = ReactNative;
+} from 'react-native';
+
 const TimerMixin = require('react-timer-mixin');
 
 const DefaultTabBar = require('./DefaultTabBar');
 const ScrollableTabBar = require('./ScrollableTabBar');
 
-const ScrollableTabView = React.createClass({
-  mixins: [TimerMixin, ],
-  statics: {
-    DefaultTabBar,
-    ScrollableTabBar,
-  },
+class ScrollableTabView extends Component{
+  constructor(props) {
+    super(props);
 
-  propTypes: {
-    tabBarPosition: PropTypes.oneOf(['top', 'bottom', 'overlayTop', 'overlayBottom', ]),
-    initialPage: PropTypes.number,
-    page: PropTypes.number,
-    onChangeTab: PropTypes.func,
-    onScroll: PropTypes.func,
-    renderTabBar: PropTypes.any,
-    style: View.propTypes.style,
-    contentProps: PropTypes.object,
-    scrollWithoutAnimation: PropTypes.bool,
-    locked: PropTypes.bool,
-  },
-
-  getDefaultProps() {
-    return {
-      tabBarPosition: 'top',
-      initialPage: 0,
-      page: -1,
-      onChangeTab: () => {},
-      onScroll: () => {},
-      contentProps: {},
-      scrollWithoutAnimation: false,
-      locked: false,
-    };
-  },
-
-  getInitialState() {
-    return {
+    this.goToPage = this.goToPage.bind(this);
+    this.renderTabBar = this.renderTabBar.bind(this);
+    this.renderScrollableContent = this.renderScrollableContent.bind(this);
+    this._updateSelectedPage = this._updateSelectedPage.bind(this);
+    this._updateScrollValue = this._updateScrollValue.bind(this);
+    this._handleLayout = this._handleLayout.bind(this);
+    this._children = this._children.bind(this);
+    this.state = {
       currentPage: this.props.initialPage,
       scrollValue: new Animated.Value(this.props.initialPage),
       containerWidth: Dimensions.get('window').width,
     };
-  },
+  }
 
   componentWillReceiveProps(props) {
     if (props.page >= 0 && props.page !== this.state.currentPage) {
       this.goToPage(props.page);
     }
-  },
+  }
 
   goToPage(pageNumber) {
     this.props.onChangeTab({ i: pageNumber, ref: this._children()[pageNumber], });
@@ -71,30 +45,26 @@ const ScrollableTabView = React.createClass({
     if (Platform.OS === 'ios') {
       const offset = pageNumber * this.state.containerWidth;
       if (this.scrollView) {
-        this.scrollView.scrollTo({x: offset, y: 0, animated: !this.props.scrollWithoutAnimation, });
+        this.scrollView.scrollTo({x: offset, y: 0, });
       }
     } else {
       if (this.scrollView) {
-        if (this.props.scrollWithoutAnimation) {
-          this.scrollView.setPageWithoutAnimation(pageNumber);
-        } else {
-          this.scrollView.setPage(pageNumber);
-        }
+        this.scrollView.setPage(pageNumber);
       }
     }
 
     this.setState({currentPage: pageNumber, });
-  },
+  }
 
   renderTabBar(props) {
     if (this.props.renderTabBar === false) {
       return null;
     } else if (this.props.renderTabBar) {
-      return React.cloneElement(this.props.renderTabBar(props), props);
+      return React.cloneElement(this.props.renderTabBar(), props);
     } else {
       return <DefaultTabBar {...props} />;
     }
-  },
+  }
 
   renderScrollableContent() {
     if (Platform.OS === 'ios') {
@@ -149,7 +119,6 @@ const ScrollableTabView = React.createClass({
          initialPage={this.props.initialPage}
          onPageSelected={this._updateSelectedPage}
          keyboardDismissMode="on-drag"
-         scrollEnabled={!this.props.locked}
          onPageScroll={(e) => {
            const { offset, position, } = e.nativeEvent;
            this._updateScrollValue(position + offset);
@@ -166,7 +135,7 @@ const ScrollableTabView = React.createClass({
         </ViewPagerAndroid>
       );
     }
-  },
+  }
 
   _updateSelectedPage(currentPage) {
     let localCurrentPage = currentPage;
@@ -176,12 +145,12 @@ const ScrollableTabView = React.createClass({
     this.setState({currentPage: localCurrentPage, }, () => {
       this.props.onChangeTab({ i: localCurrentPage, ref: this._children()[localCurrentPage], });
     });
-  },
+  }
 
   _updateScrollValue(value) {
     this.state.scrollValue.setValue(value);
     this.props.onScroll(value);
-  },
+  }
 
   _handleLayout(e) {
     const { width, } = e.nativeEvent.layout;
@@ -192,11 +161,11 @@ const ScrollableTabView = React.createClass({
         this.goToPage(this.state.currentPage);
       });
     }
-  },
+  }
 
   _children() {
     return React.Children.map(this.props.children, (child) => child);
-  },
+  }
 
   render() {
     let overlayTabs = (this.props.tabBarPosition === 'overlayTop' || this.props.tabBarPosition === 'overlayBottom');
@@ -237,8 +206,36 @@ const ScrollableTabView = React.createClass({
       {this.renderScrollableContent()}
       {(this.props.tabBarPosition === 'bottom' || overlayTabs) && this.renderTabBar(tabBarProps)}
     </View>;
-  },
-});
+  }
+}
+
+ScrollableTabView.mixins = [TimerMixin, ];
+
+ScrollableTabView.statics = {
+  DefaultTabBar,
+  ScrollableTabBar,
+};
+
+ScrollableTabView.propTypes = {
+  tabBarPosition: PropTypes.oneOf(['top', 'bottom', 'overlayTop', 'overlayBottom', ]),
+  initialPage: PropTypes.number,
+  page: PropTypes.number,
+  onChangeTab: PropTypes.func,
+  onScroll: PropTypes.func,
+  renderTabBar: PropTypes.any,
+  style: View.propTypes.style,
+  contentProps: PropTypes.object,
+};
+
+ScrollableTabView.defaultProps = {
+  tabBarPosition: 'top',
+  initialPage: 0,
+  page: -1,
+  onChangeTab: () => {},
+  onScroll: () => {},
+  contentProps: {}
+};
+
 
 module.exports = ScrollableTabView;
 

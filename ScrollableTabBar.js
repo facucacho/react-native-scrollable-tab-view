@@ -1,6 +1,5 @@
-const React = require('react');
-const ReactNative = require('react-native');
-const {
+import React, {Component} from 'react';
+import {
   View,
   Animated,
   StyleSheet,
@@ -10,53 +9,34 @@ const {
   Platform,
   findNodeHandle,
   Dimensions,
-} = ReactNative;
+} from 'react-native';
 
+const TAB_HEIGHT = 50;
 const WINDOW_WIDTH = Dimensions.get('window').width;
 
-const ScrollableTabBar = React.createClass({
-  propTypes: {
-    goToPage: React.PropTypes.func,
-    activeTab: React.PropTypes.number,
-    tabs: React.PropTypes.array,
-    underlineColor: React.PropTypes.string,
-    underlineHeight: React.PropTypes.number,
-    backgroundColor: React.PropTypes.string,
-    activeTextColor: React.PropTypes.string,
-    inactiveTextColor: React.PropTypes.string,
-    scrollOffset: React.PropTypes.number,
-    style: View.propTypes.style,
-    tabStyle: View.propTypes.style,
-    tabsContainerStyle: View.propTypes.style,
-    textStyle: Text.propTypes.style,
-  },
+class ScrollableTabBar extends Component{
+  constructor(props) {
+    super(props);
 
-  getDefaultProps() {
-    return {
-      scrollOffset: 52,
-      activeTextColor: 'navy',
-      inactiveTextColor: 'black',
-      underlineColor: 'navy',
-      backgroundColor: null,
-      underlineHeight: 4,
-      style: {},
-      tabStyle: {},
-      tabsContainerStyle: {},
-    };
-  },
-
-  getInitialState() {
+    this.updateView = this.updateView.bind(this);
+    this.necessarilyMeasurementsCompleted = this.necessarilyMeasurementsCompleted.bind(this);
+    this.updateTabPanel = this.updateTabPanel.bind(this);
+    this.updateTabUnderline = this.updateTabUnderline.bind(this);
+    this.renderTabOption = this.renderTabOption.bind(this);
+    this.measureTab = this.measureTab.bind(this);
+    this.onTabContainerLayout = this.onTabContainerLayout.bind(this);
+    this.onContainerLayout = this.onContainerLayout.bind(this);
     this._tabsMeasurements = [];
-    return {
+    this.state = {
       _leftTabUnderline: new Animated.Value(0),
       _widthTabUnderline: new Animated.Value(0),
-      _containerWidth: null,
+      _containerWidth: null
     };
-  },
+  }
 
   componentDidMount() {
     this.props.scrollValue.addListener(this.updateView);
-  },
+  }
 
   updateView(offset) {
     const position = Math.floor(offset.value);
@@ -71,11 +51,11 @@ const ScrollableTabBar = React.createClass({
       this.updateTabPanel(position, pageOffset);
       this.updateTabUnderline(position, pageOffset, tabCount);
     }
-  },
+  }
 
   necessarilyMeasurementsCompleted(position) {
     return this._tabsMeasurements[position] && this._tabsMeasurements[position + 1];
-  },
+  }
 
   updateTabPanel(position, pageOffset) {
     const absolutePageOffset = pageOffset * this._tabsMeasurements[position].width;
@@ -84,15 +64,14 @@ const ScrollableTabBar = React.createClass({
     newScrollX -= this.props.scrollOffset;
     newScrollX = newScrollX >= 0 ? newScrollX : 0;
 
-    if (Platform.OS === 'android') {
+    if (Platform === 'android') {
       this._scrollView.scrollTo({x: newScrollX, y: 0, });
     } else {
       const rightBoundScroll = this._tabContainerMeasurements.width - (this._containerMeasurements.width);
       newScrollX = newScrollX > rightBoundScroll ? rightBoundScroll : newScrollX;
       this._scrollView.scrollTo({x: newScrollX, y: 0, });
     }
-
-  },
+  }
 
   updateTabUnderline(position, pageOffset, tabCount) {
     const lineLeft = this._tabsMeasurements[position].left;
@@ -111,7 +90,7 @@ const ScrollableTabBar = React.createClass({
       this.state._leftTabUnderline.setValue(lineLeft);
       this.state._widthTabUnderline.setValue(lineRight - lineLeft);
     }
-  },
+  }
 
   renderTabOption(name, page) {
     const isTabActive = this.props.activeTab === page;
@@ -135,7 +114,7 @@ const ScrollableTabBar = React.createClass({
         </Text>
       </View>
     </TouchableOpacity>;
-  },
+  }
 
   measureTab(page) {
     const tabContainerhandle = findNodeHandle(this.refs.tabContainer);
@@ -144,7 +123,7 @@ const ScrollableTabBar = React.createClass({
 
       this.updateView({value: this.props.scrollValue._value, });
     });
-  },
+  }
 
   render() {
     const tabUnderlineStyle = {
@@ -168,6 +147,7 @@ const ScrollableTabBar = React.createClass({
         horizontal={true}
         showsHorizontalScrollIndicator={false}
         showsVerticalScrollIndicator={false}
+        style={styles.scrollableContainer}
         directionalLockEnabled={true}
         scrollEventThrottle={16}
         bounces={false}
@@ -182,7 +162,7 @@ const ScrollableTabBar = React.createClass({
         </View>
       </ScrollView>
     </View>;
-  },
+  }
 
   onTabContainerLayout(e) {
     this._tabContainerMeasurements = e.nativeEvent.layout;
@@ -191,18 +171,45 @@ const ScrollableTabBar = React.createClass({
       width = WINDOW_WIDTH;
     }
     this.setState({ _containerWidth: width, });
-  },
+  }
 
   onContainerLayout(e) {
     this._containerMeasurements = e.nativeEvent.layout;
-  },
-});
+  }
+}
+
+ScrollableTabBar.propTypes = {
+  goToPage: React.PropTypes.func,
+  activeTab: React.PropTypes.number,
+  tabs: React.PropTypes.array,
+  underlineColor: React.PropTypes.string,
+  underlineHeight: React.PropTypes.number,
+  backgroundColor: React.PropTypes.string,
+  activeTextColor: React.PropTypes.string,
+  inactiveTextColor: React.PropTypes.string,
+  scrollOffset: React.PropTypes.number,
+  style: React.PropTypes.object,
+  tabStyle: React.PropTypes.object,
+  tabsContainerStyle: React.PropTypes.object,
+};
+
+ScrollableTabBar.defaultProps = {
+  scrollOffset: 52,
+  activeTextColor: 'navy',
+  inactiveTextColor: 'black',
+  underlineColor: 'navy',
+  backgroundColor: null,
+  underlineHeight: 4,
+  style: {},
+  tabStyle: {},
+  tabsContainerStyle: {},
+};
 
 module.exports = ScrollableTabBar;
 
 const styles = StyleSheet.create({
   tab: {
-    height: 49,
+    height: TAB_HEIGHT - 1,
     alignItems: 'center',
     justifyContent: 'center',
     paddingBottom: 30,
@@ -210,7 +217,7 @@ const styles = StyleSheet.create({
     paddingRight: 20,
   },
   container: {
-    height: 50,
+    height: TAB_HEIGHT,
     borderWidth: 1,
     borderTopWidth: 0,
     borderLeftWidth: 0,
@@ -218,7 +225,11 @@ const styles = StyleSheet.create({
     borderBottomColor: '#ccc',
   },
   tabs: {
+    height: TAB_HEIGHT - 1,
     flexDirection: 'row',
     justifyContent: 'space-around',
+  },
+  scrollableContainer: {
+    height: TAB_HEIGHT,
   },
 });

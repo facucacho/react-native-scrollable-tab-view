@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 import {
   StyleSheet,
   Text,
@@ -9,7 +9,7 @@ import {
 import FacebookTabBar from './FacebookTabBar';
 import ScrollableTabView from 'react-native-scrollable-tab-view';
 
-export default React.createClass({
+export default class FacebookExample extends Component{
   render() {
     return <View style={styles.container}>
       <ScrollableTabView initialPage={1} renderTabBar={() => <FacebookTabBar />}>
@@ -40,8 +40,8 @@ export default React.createClass({
         </ScrollView>
       </ScrollableTabView>
     </View>;
-  },
-});
+  }
+}
 
 const styles = StyleSheet.create({
   container: {
